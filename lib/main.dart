@@ -1,4 +1,3 @@
-import 'dart:math' show pi;
 import 'package:flutter/material.dart';
 
 void main() {
@@ -12,6 +11,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
@@ -19,6 +19,51 @@ class MyApp extends StatelessWidget {
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
+}
+
+enum CircleSide { left, right }
+
+extension ToPath on CircleSide {
+  Path toPath(Size size) {
+    final path = Path();
+
+    late Offset offset;
+    late bool clockwise;
+
+    switch (this) {
+      case CircleSide.left:
+        path.moveTo(size.width, 0);
+        offset = Offset(size.width, size.height);
+        clockwise = false;
+        break;
+      case CircleSide.right:
+        offset = Offset(0, size.height);
+        clockwise = true;
+        break;
+    }
+    path.arcToPoint(
+      offset,
+      radius: Radius.elliptical(size.width / 2, size.height / 2),
+      clockwise: clockwise,
+    );
+
+    path.close();
+    return path;
+  }
+}
+
+class HalfCircleClipper extends CustomClipper<Path> {
+  final CircleSide side;
+
+  const HalfCircleClipper({
+    required this.side,
+  });
+
+  @override
+  Path getClip(Size size) => side.toPath(size);
+
+  @override
+  bool shouldReclip(covariant CustomClipper<Path> oldClipper) => true;
 }
 
 class MyHomePage extends StatefulWidget {
@@ -32,54 +77,30 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage>
     with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _animation;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 2),
-    );
-    _animation = Tween<double>(begin: 0.0, end: 2 * pi).animate(_controller);
-
-    _controller.repeat();
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: AnimatedBuilder(
-          animation: _controller,
-          builder: (context, child) {
-            return Transform(
-              alignment: Alignment.center,
-              transform: Matrix4.identity()..rotateY(_animation.value),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ClipPath(
+              clipper: const HalfCircleClipper(side: CircleSide.left),
               child: Container(
-                width: 100,
-                height: 100,
-                decoration: BoxDecoration(
-                    color: Colors.blueAccent,
-                    borderRadius: const BorderRadius.all(Radius.circular(10)),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.5),
-                        spreadRadius: 5,
-                        blurRadius: 7,
-                        offset: const Offset(0, 3)
-                      ),
-                    ]),
+                width: 150,
+                height: 150,
+                color: Colors.blue,
               ),
-            );
-          }
+            ),
+            ClipPath(
+              clipper: const HalfCircleClipper(side: CircleSide.right),
+              child: Container(
+                width: 150,
+                height: 150,
+                color: Colors.yellow,
+              ),
+            )
+          ],
         ),
       ),
     );
