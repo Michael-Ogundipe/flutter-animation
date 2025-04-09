@@ -42,7 +42,7 @@ class _CircularDragDemoState extends State<CircularDragDemo> {
     if (!_isLayoutReady) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         setState(() {
-          _center = Offset(MediaQuery.of(context).size.width / 2,
+          _center = Offset(MediaQuery.of(context).size.width / 2.2,
               MediaQuery.of(context).size.height / 3);
           _isLayoutReady = true;
         });
@@ -56,12 +56,6 @@ class _CircularDragDemoState extends State<CircularDragDemo> {
       body: Stack(
         alignment: Alignment.center,
         children: [
-          // Draw the circular path only when layout is ready
-          if (_isLayoutReady)
-            CustomPaint(
-              size: Size.infinite,
-              painter: CirclePathPainter(_center, _radius),
-            ),
 
           Positioned(
             left: _center.dx - 30,
@@ -72,7 +66,6 @@ class _CircularDragDemoState extends State<CircularDragDemo> {
               child: Blob(color: Colors.orangeAccent),
             ),
           ),
-
 
           // Draw circles only when layout is ready
           if (_isLayoutReady) ...[
@@ -195,67 +188,3 @@ class _CircularDragDemoState extends State<CircularDragDemo> {
   }
 }
 
-// Custom painter to draw the circular path
-class CirclePathPainter extends CustomPainter {
-  final Offset center;
-  final double radius;
-
-  CirclePathPainter(this.center, this.radius);
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = Colors.grey.withOpacity(0.5)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 2.0;
-
-    canvas.drawCircle(center, radius, paint);
-
-    // Mark the 0, 90, and 180 degree positions
-    final textStyle = TextStyle(
-      color: Colors.black,
-      fontSize: 16,
-    );
-    final textPainter = TextPainter(
-      textDirection: TextDirection.ltr,
-    );
-
-    // 0 degrees mark
-    _drawAngleMark(canvas, 0, "0°", textPainter, textStyle);
-
-    // 90 degrees mark
-    _drawAngleMark(canvas, pi/2, "90°", textPainter, textStyle);
-
-    // 180 degrees mark
-    _drawAngleMark(canvas, pi, "180°", textPainter, textStyle);
-
-    // 270 degrees mark
-    _drawAngleMark(canvas, 3*pi/2, "270°", textPainter, textStyle);
-  }
-
-  void _drawAngleMark(Canvas canvas, double angle, String text,
-      TextPainter textPainter, TextStyle textStyle) {
-    final markPaint = Paint()
-      ..color = Colors.black
-      ..style = PaintingStyle.fill;
-
-    final x = center.dx + radius * cos(angle);
-    final y = center.dy + radius * sin(angle);
-
-    // Draw mark point
-    canvas.drawCircle(Offset(x, y), 5, markPaint);
-
-    // Draw text
-    textPainter.text = TextSpan(text: text, style: textStyle);
-    textPainter.layout();
-
-    // Position text outside the circle
-    final textX = center.dx + (radius + 20) * cos(angle) - textPainter.width / 2;
-    final textY = center.dy + (radius + 20) * sin(angle) - textPainter.height / 2;
-
-    textPainter.paint(canvas, Offset(textX, textY));
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
-}
