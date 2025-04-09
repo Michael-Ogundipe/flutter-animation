@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import 'blob.dart';
 
@@ -16,7 +17,7 @@ class _CircularDragDemoState extends State<CircularDragDemo> {
   Offset _center = Offset.zero;
 
   // Radius of the circular path
-  double _radius = 120;
+  double _radius = 130;
 
   // Current angles of the circles in radians
   double angle1 = 0;
@@ -42,7 +43,7 @@ class _CircularDragDemoState extends State<CircularDragDemo> {
     if (!_isLayoutReady) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         setState(() {
-          _center = Offset(MediaQuery.of(context).size.width / 2.2,
+          _center = Offset(MediaQuery.of(context).size.width / 2.4,
               MediaQuery.of(context).size.height / 3);
           _isLayoutReady = true;
         });
@@ -50,39 +51,46 @@ class _CircularDragDemoState extends State<CircularDragDemo> {
     }
 
     return Scaffold(
+      backgroundColor: const Color(0XFFF6C13B),
       appBar: AppBar(
-        title: const Text('Linked Circles Demo'),
+        backgroundColor: const Color(0XFFF6C13B),
+        title:  Text('Glovo Animation',style: TextStyle(fontWeight: FontWeight.w500),),
       ),
       body: Stack(
         alignment: Alignment.center,
         children: [
-
           Positioned(
-            left: _center.dx - 30,
+            left: _center.dx - 15,
             top: _center.dy - 25,
-            child: const SizedBox(
+            child: SizedBox(
               width: 100,
               height: 100,
-              child: Blob(color: Colors.orangeAccent),
+              child: Blob(
+                color: Colors.white,
+                widget: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SvgPicture.asset('assets/job.svg', width: 80),
+                  ],
+                ),
+              ),
             ),
           ),
 
           // Draw circles only when layout is ready
           if (_isLayoutReady) ...[
-            _buildDraggableCircle(0, angle1, Colors.red),
-            _buildDraggableCircle(1, angle2, Colors.blue),
-            _buildDraggableCircle(2, angle3, Colors.yellow),
-            _buildDraggableCircle(3, angle4, Colors.green),
+            _buildDraggableCircle(0, angle1, Colors.red, 'Food', 'assets/food.svg'),
+            _buildDraggableCircle(1, angle2, Colors.blue, 'Shops', 'assets/shops.svg'),
+            _buildDraggableCircle(2, angle3, Colors.yellow, 'Delivery', 'assets/delivery.svg'),
+            _buildDraggableCircle(3, angle4, Colors.green, 'Groceries', 'assets/groceries.svg'),
           ] else
             const Center(child: CircularProgressIndicator()),
-
-
         ],
       ),
     );
   }
 
-  Widget _buildDraggableCircle(int index, double angle, Color color) {
+  Widget _buildDraggableCircle(int index, double angle, Color color, String title, String asset,) {
     // Calculate position on the circle
     final x = _center.dx + _radius * cos(angle);
     final y = _center.dy + _radius * sin(angle);
@@ -100,10 +108,20 @@ class _CircularDragDemoState extends State<CircularDragDemo> {
         onPanEnd: (_) {
           _endDrag();
         },
-        child: Container(
-          width: 100,
-          height: 100,
-          child: Blob(color: color),
+        child: SizedBox(
+          width: 120,
+          height: 110,
+          child: Blob(
+            color: Colors.white,
+            widget: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SvgPicture.asset(asset, width: 52),
+                const SizedBox(height: 4),
+                Text(title, style: const TextStyle(fontSize: 16))
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -187,4 +205,3 @@ class _CircularDragDemoState extends State<CircularDragDemo> {
     });
   }
 }
-
