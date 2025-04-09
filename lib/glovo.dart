@@ -17,7 +17,7 @@ class _CircularDragDemoState extends State<CircularDragDemo> {
   Offset _center = Offset.zero;
 
   // Radius of the circular path
-  double _radius = 130;
+  double _radius = 116;
 
   // Current angles of the circles in radians
   double angle1 = 0;
@@ -43,7 +43,7 @@ class _CircularDragDemoState extends State<CircularDragDemo> {
     if (!_isLayoutReady) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         setState(() {
-          _center = Offset(MediaQuery.of(context).size.width / 2.4,
+          _center = Offset(MediaQuery.of(context).size.width / 2.3,
               MediaQuery.of(context).size.height / 3);
           _isLayoutReady = true;
         });
@@ -55,12 +55,13 @@ class _CircularDragDemoState extends State<CircularDragDemo> {
       appBar: AppBar(
         backgroundColor: const Color(0XFFF6C13B),
         title:  Text('Glovo Animation',style: TextStyle(fontWeight: FontWeight.w500),),
+        centerTitle: true,
       ),
       body: Stack(
         alignment: Alignment.center,
         children: [
           Positioned(
-            left: _center.dx - 15,
+            left: _center.dx - 20,
             top: _center.dy - 25,
             child: SizedBox(
               width: 100,
@@ -109,8 +110,8 @@ class _CircularDragDemoState extends State<CircularDragDemo> {
           _endDrag();
         },
         child: SizedBox(
-          width: 120,
-          height: 110,
+          width: 100,
+          height: 100,
           child: Blob(
             color: Colors.white,
             widget: Column(
