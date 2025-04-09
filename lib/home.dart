@@ -41,21 +41,43 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
               alignment: Alignment.center,
               children: [
                 // top
-                const Positioned(top: 200, child: Circle()),
+               // const Positioned(top: 200, child: Circle()),
+                Positioned(
+                  top: 200,
+                  child: DragTarget(
+                    onAcceptWithDetails: (values){
+
+                      controller.reverse();
+                    },
+                      builder: (context, candidate, rejects){
+
+                    return Circle(title: 'See');
+                  }
+
+                  ),
+                ),
                 // bottom
                 const Positioned(bottom: 200, child: Circle()),
                 // left
                 const Positioned(left: 0, child: Circle()),
                 //right
-                Positioned(right: 0,
-                    child: GestureDetector(
-                      onVerticalDragUpdate: (_){
-                        controller.forward();
-                      },
-                        child: Circle(title: 'One',)),
-                ),
+                // Positioned(right: 0,
+                //     child: GestureDetector(
+                //       onVerticalDragUpdate: (_){
+                //         controller.forward();
+                //       },
+                //         child: Circle(title: 'One',)),
+                // ),
                 //center
-                const Center(child: Circle())
+                const Center(child: Circle()),
+                Positioned(
+                  right: 0,
+                  child: Draggable(
+                    child: Circle(title: 'Drag',),
+                    feedback: Circle(title: 'Dragged',),
+                    childWhenDragging: SizedBox.shrink(),
+                  ),
+                )
               ],
             ),
           );
